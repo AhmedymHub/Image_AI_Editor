@@ -1,8 +1,3 @@
-/* eslint-disable camelcase */
-// Replace this:
-// import { clerkClient } from "@clerk/nextjs";
-
-// With this:
 import { clerkClient } from "@clerk/clerk-sdk-node";
 
 import { WebhookEvent } from "@clerk/nextjs/server";
@@ -23,7 +18,6 @@ export async function POST(req: Request) {
   }
 
   // Get the headers
-  const headerPayload = headers();
   const svix_id = req.headers.get("svix-id");
   const svix_timestamp = req.headers.get("svix-timestamp");
   const svix_signature = req.headers.get("svix-signature");
