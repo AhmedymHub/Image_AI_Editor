@@ -1,0 +1,18 @@
+#Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_c3Ryb25nLXNuYXBwZXItMzYuY2xlcmsuYWNjb3VudHMuZGV2JA
+CLERK_SECRET_KEY=sk_test_9S91cwRVYIdiDT6LdnYrRehDuLBUiZmaULlrdcvC7u
+
+#Clerk URLs
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+#Clerk Webhooks Secret
+WEBHOOK_SECRET=whsec_DXRvPv2jo7kAnZ04pdDbd/AbshPfynQz
+
+# MongoDB
+# MONGODB_URL=mongodb+srv://ahmedomarali24:yPphDxQyYmMXUca5@cluster0.4e6ne.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+MONGODB_URL=mongodb+srv://ahmedomarali24:jTiUi5VFuBj2OI0N@cluster0.7hsyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+

@@ -41,17 +41,17 @@ and hybrid web applications, and TypeScript is a superset of JavaScript with sta
  It provides a rich API for uploading, transforming, optimizing, 
  and delivering assets in real-time, making it a popular choice for modern web and mobile applications.
 
- Steps of the project:
+ Steps of the project => Image_AI_Editor:
  
  — Project Setup ✅
  — Next.js Routing & folder structure ✅
  — Clerk Authentication ✅
  — Layout Sidebar & Mobile Navigation ✅
  — Database & Models Setup ==> MongoDB and Mongoose ✅
- — Server Actions & Webhook
- — Add Image Form (React Hook Form + Zod Validation) Cloudinary Media Uploader
- — Transformed Image Components
- — Image Server Action
+ — Server Actions & Webhook ✅
+ — Add Image Form (React Hook Form + Zod Validation) Cloudinary Media Uploader ✅
+ — Transformed Image Components ✅
+ — Image Server Action ...
  — Homepage + Search & Pagination
  — Image details, Update & Delete Image
  — Checkout & Pay with Stripe

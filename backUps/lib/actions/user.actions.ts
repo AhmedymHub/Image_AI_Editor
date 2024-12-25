@@ -68,27 +68,26 @@ export async function deleteUser(clerkId: string) {
     revalidatePath("/");
 
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
-  } catch (error) { 
+  } catch (error) {
     handleError(error);
   }
 }
 
 // USE CREDITS
-export async function updateCredits(userId: string, creditFee: number){
+export async function updateCredits(userId: string, creditFee: number) {
   try {
     await connectToDatabase();
 
-    const updateUserCredits = await User.findOneAndUpdate(
-      {_id: userId },
-      { $inc: { creditBalance: creditFee } },
+    const updatedUserCredits = await User.findOneAndUpdate(
+      { _id: userId },
+      { $inc: { creditBalance: creditFee }},
       { new: true }
     )
-  
-  if(!updateUserCredits) throw new Error("User credits update failed");
-  return JSON.parse(JSON.stringify(updateUserCredits));
-  
+
+    if(!updatedUserCredits) throw new Error("User credits update failed");
+
+    return JSON.parse(JSON.stringify(updatedUserCredits));
   } catch (error) {
     handleError(error);
-    
   }
 }
