@@ -151,10 +151,10 @@ export async function addImage({image, userId, path}: AddImageParams) {
         }
 
 
-    } catch (error) {
-        handleError(error)
-   }
- }
+    }catch (error) {
+        handleError(error);
+      }
+    }
 
  // GET IMAGES BY USER
 export async function getUserImages({
