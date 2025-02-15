@@ -14,15 +14,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Form
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { aspectRatioOptions, creditFee, defaultValues, transformationTypes } from "@/constants";
 import { CustomField } from "./CustomField";
 import { useEffect, useState, useTransition } from "react";
@@ -57,7 +50,7 @@ const TransformationForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
   const [transformationConfig, setTransformationConfig] = useState(config);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const router = useRouter();
 
   const initialValues =
@@ -145,7 +138,7 @@ const TransformationForm = ({
   const onSelectFieldHandler = (value: string, onChangeField: (value: string) => void) => {
     const imageSize = aspectRatioOptions[value as AspectRatioKey];
 
-    setImage((prevState: any) => ({
+    setImage((prevState: ImageData | null) => ({
       ...prevState,
       aspectRatio: imageSize.aspectRatio,
       width: imageSize.width,
@@ -163,13 +156,17 @@ const TransformationForm = ({
     type: string,
     onChangeField: (value: string) => void) => {
     debounce(() => {
-      setNewTransformation((prevState: any) => ({
-        ...prevState,
-        [type]: {
-          ...prevState?.[type],
-          [fieldName === "prompt" ? "prompt" : "to"]: value,
-        }
-      }))
+      setNewTransformation((prevState: Transformations | null) => {
+        if (!prevState) return {}; // Handle null state
+      
+        return {
+          ...prevState,
+          [type]: {
+            ...prevState[type], // Use the type as the key
+            [fieldName === "prompt" ? "prompt" : "to"]: value, // Set the appropriate field
+          },
+        };
+      });
 
     }, 1000)();
 
