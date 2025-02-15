@@ -4,7 +4,8 @@ import { twMerge } from "tailwind-merge";
 
 import { aspectRatioOptions } from "@/constants";
 
-type AspectRatioKey = keyof typeof aspectRatioOptions;
+export type AspectRatioKey = keyof typeof aspectRatioOptions;
+
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -92,16 +93,19 @@ export const debounce = <T extends (...args: unknown[]) => void>(
 };
 
 
-// GET IMAGE SIZE
+// GE IMAGE SIZE
 export const getImageSize = (
+  type: string,
   image: { aspectRatio?: string; width?: number; height?: number },
   dimension: "width" | "height"
 ): number => {
-  return (
-    aspectRatioOptions[image.aspectRatio as AspectRatioKey]?.[dimension] ||
-    image?.[dimension] ||
-    1000
-  );
+  if (type === "fill") {
+    return (
+      aspectRatioOptions[image.aspectRatio as AspectRatioKey]?.[dimension] ||
+      1000
+    );
+  }
+  return image?.[dimension] || 1000;
 };
 
 // DOWNLOAD IMAGE

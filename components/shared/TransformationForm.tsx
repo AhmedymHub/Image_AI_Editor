@@ -46,7 +46,7 @@ const TransformationForm = ({
 }: TransformationFormProps) => {
   const transformationType = transformationTypes[type];
   const [image, setImage] = useState(data);
-  const [newTransformation, setNewTransformation] = useState<Transformations | null>(null);
+  const [newTransformation, setNewTransformation] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
   const [transformationConfig, setTransformationConfig] = useState(config);
@@ -156,7 +156,7 @@ const TransformationForm = ({
     type: string,
     onChangeField: (value: string) => void) => {
     debounce(() => {
-      setNewTransformation((prevState: Transformations | null) => {
+      setNewTransformation((prevState: any | null) => {
         if (!prevState) return {}; // Handle null state
       
         return {

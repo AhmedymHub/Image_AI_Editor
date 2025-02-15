@@ -119,6 +119,8 @@ declare type TransformationFormProps = {
 
 declare type ImageType = {
   url: string;
+  publicId: string;
+  title: string;
   altText: string;
   width: number;
   height: number;
