@@ -36,6 +36,13 @@ export const formSchema = z.object({
   publicId: z.string(),
 });
 
+interface TransformationConfig {
+  [key: string]: {
+    prompt?: string;
+    to?: string;
+  };
+}
+
 const TransformationForm = ({
   action,
   data = null,
@@ -44,9 +51,9 @@ const TransformationForm = ({
   creditBalance,
   config = null,
 }: TransformationFormProps) => {
-  const transformationType = transformationTypes[type];
+  const transformationType = transformationTypes[type] as TransformationConfig;
   const [image, setImage] = useState(data);
-  const [newTransformation, setNewTransformation] = useState<any | null>(null);
+  const [newTransformation, setNewTransformation] = useState<TransformationConfig | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
   const [transformationConfig, setTransformationConfig] = useState(config);
@@ -145,7 +152,7 @@ const TransformationForm = ({
       height: imageSize.height,
     }));
 
-    setNewTransformation(transformationType.config);
+    setNewTransformation(transformationType as TransformationConfig);
 
     return onChangeField(value);
   };
@@ -156,7 +163,7 @@ const TransformationForm = ({
     type: string,
     onChangeField: (value: string) => void) => {
     debounce(() => {
-      setNewTransformation((prevState: any | null) => {
+      setNewTransformation((prevState: TransformationConfig | null) => {
         if (!prevState) return {}; // Handle null state
       
         return {
@@ -186,10 +193,10 @@ const TransformationForm = ({
   };
 
   useEffect(() => {
-    if (image && (type === "restore" || type === "removeBackground")) {
-      setNewTransformation(transformationType.config);
-    }
-  }, [image, transformationType.config, type]);
+      if (image && (type === "restore" || type === "removeBackground")) {
+        setNewTransformation(transformationType as TransformationConfig);
+      }
+    }, [image, transformationType, type]);
 
   return (
     <Form {...form}>
