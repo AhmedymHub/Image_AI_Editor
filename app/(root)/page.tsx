@@ -12,8 +12,9 @@ interface PageProps {
 }
 
 const Home = async ({ searchParams }: PageProps) => {
-  const page = Number(searchParams?.page) || 1; // Default to 1 if no page param is provided
-  const searchQuery = searchParams?.query || ''; // Default to empty string if no query param is provided
+  // Use Number for pagination, default to 1 if undefined
+  const page = Number(searchParams?.page) || 1;
+  const searchQuery = searchParams?.query || ''; // Default to an empty string if no query param is provided
 
   const images = await getAllImages({ page, searchQuery });
 
