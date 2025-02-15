@@ -18,12 +18,6 @@ declare type UpdateUserParams = {
 };
 
 // ====== IMAGE PARAMS
-declare type ConfigType = {
-  key1: string;
-  key2: number;
-  // other properties for config
-};
-
 declare type AddImageParams = {
   image: {
     title: string;
@@ -31,7 +25,7 @@ declare type AddImageParams = {
     transformationType: string;
     width: number;
     height: number;
-    config: ConfigType; // Updated type
+    config: any;
     secureURL: string;
     transformationURL: string;
     aspectRatio: string | undefined;
@@ -50,7 +44,7 @@ declare type UpdateImageParams = {
     transformationType: string;
     width: number;
     height: number;
-    config: ConfigType; // Updated type
+    config: any;
     secureURL: string;
     transformationURL: string;
     aspectRatio: string | undefined;
@@ -59,6 +53,22 @@ declare type UpdateImageParams = {
   };
   userId: string;
   path: string;
+};
+
+declare type Transformations = {
+  restore?: boolean;
+  fillBackground?: boolean;
+  remove?: {
+    prompt: string;
+    removeShadow?: boolean;
+    multiple?: boolean;
+  };
+  recolor?: {
+    prompt?: string;
+    to: string;
+    multiple?: boolean;
+  };
+  removeBackground?: boolean;
 };
 
 // ====== TRANSACTION PARAMS
@@ -117,17 +127,8 @@ declare type TransformationFormProps = {
   config?: Transformations | null;
 };
 
-declare type ImageType = {
-  url: string;
-  publicId: string;
-  title: string;
-  altText: string;
-  width: number;
-  height: number;
-};
-
 declare type TransformedImageProps = {
-  image: ImageType; // Updated type
+  image: any;
   type: string;
   title: string;
   transformationConfig: Transformations | null;
