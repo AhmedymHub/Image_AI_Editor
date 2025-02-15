@@ -1,19 +1,15 @@
-import { Collection } from "@/components/shared/Collection";
-import { navLinks } from "@/constants";
-import { getAllImages } from "@/lib/actions/image.actions";
-import Image from "next/image";
-import Link from "next/link";
-
-interface SearchParamProps {
-  searchParams: {
-    page?: string;
-    query?: string;
-  };
-}
+import { Collection } from "@/components/shared/Collection"
+import { navLinks } from "@/constants"
+import { getAllImages } from "@/lib/actions/image.actions"
+import Image from "next/image"
+import Link from "next/link"
 
 const Home = async ({ searchParams }: SearchParamProps) => {
-  const page = Number(searchParams?.page) || 1; // Default to 1 if no page param is provided
-  const searchQuery = searchParams?.query || ''; // Default to empty string if no query param is provided
+  // Await the searchParams Promise
+  const params = searchParams;
+
+  const page = Number(params?.page) || 1; // Default to 1 if no page param is provided
+  const searchQuery = Array.isArray(params?.query) ? params.query[0] : params?.query || ''; // Ensure searchQuery is a string
 
   const images = await getAllImages({ page, searchQuery });
 
@@ -40,7 +36,7 @@ const Home = async ({ searchParams }: SearchParamProps) => {
       </section>
 
       <section className="sm:mt-12">
-        <Collection
+        <Collection 
           hasSearch={true}
           images={images?.data}
           totalPages={images?.totalPage}
@@ -48,7 +44,7 @@ const Home = async ({ searchParams }: SearchParamProps) => {
         />
       </section>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
