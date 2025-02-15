@@ -1,22 +1,14 @@
-import { Collection } from "@/components/shared/Collection";
-import { navLinks } from "@/constants";
-import { getAllImages } from "@/lib/actions/image.actions";
-import Image from "next/image";
-import Link from "next/link";
+import { Collection } from "@/components/shared/Collection"
+import { navLinks } from "@/constants"
+import { getAllImages } from "@/lib/actions/image.actions"
+import Image from "next/image"
+import Link from "next/link"
 
-interface PageProps {
-  searchParams: {
-    page?: string;
-    query?: string;
-  };
-}
-
-const Home = async ({ searchParams }: PageProps) => {
-  // Use Number for pagination, default to 1 if undefined
+const Home = async ({ searchParams }: SearchParamProps) => {
   const page = Number(searchParams?.page) || 1;
-  const searchQuery = searchParams?.query || ''; // Default to an empty string if no query param is provided
+  const searchQuery = (searchParams?.query as string) || '';
 
-  const images = await getAllImages({ page, searchQuery });
+  const images = await getAllImages({ page, searchQuery})
 
   return (
     <>
@@ -41,7 +33,7 @@ const Home = async ({ searchParams }: PageProps) => {
       </section>
 
       <section className="sm:mt-12">
-        <Collection
+        <Collection 
           hasSearch={true}
           images={images?.data}
           totalPages={images?.totalPage}
@@ -49,7 +41,7 @@ const Home = async ({ searchParams }: PageProps) => {
         />
       </section>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
