@@ -1,3 +1,5 @@
+// app/(root)/page.tsx
+
 import { Collection } from "@/components/shared/Collection";
 import { navLinks } from "@/constants";
 import { getAllImages } from "@/lib/actions/image.actions";
@@ -10,7 +12,7 @@ interface HomeProps {
 
 const Home = async ({ searchParams }: HomeProps) => {
   const page = Number(searchParams?.page) || 1;
-  const searchQuery = (searchParams?.query as string) || '';
+  const searchQuery = (searchParams?.query as string) || "";
 
   const images = await getAllImages({ page, searchQuery });
 
@@ -28,9 +30,11 @@ const Home = async ({ searchParams }: HomeProps) => {
               className="flex-center flex-col gap-2"
             >
               <li className="flex-center w-fit rounded-full bg-white p-4">
-                <Image src={link.icon} alt="image" width={24} height={24} />
+                <Image src={link.icon} alt="icon" width={24} height={24} />
               </li>
-              <p className="p-14-medium text-center text-white">{link.label}</p>
+              <p className="p-14-medium text-center text-white">
+                {link.label}
+              </p>
             </Link>
           ))}
         </ul>
