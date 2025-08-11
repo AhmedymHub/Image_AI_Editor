@@ -6,7 +6,7 @@ The **AI Image Editor SaaS** platform enables advanced AI-driven image transform
 - ✂️ Object removal
 - 🖌️ Background removal
 
-Built with **Next.js**, **MongoDB**, and **Cloudinary**, it delivers a smooth editing experience.  
+Built with **Next.js**, **React**, **MongoDB**, **Node.js** and **Cloudinary**, it delivers a smooth editing experience.  
 Stripe integration allows users to purchase credits for premium features.
 
 ---
