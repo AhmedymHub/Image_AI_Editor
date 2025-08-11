@@ -1,41 +1,83 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🖼️ Image AI Editor
 
-## Getting Started
+The **AI Image Editor SaaS** platform enables advanced AI-driven image transformations such as:
+- 🛠️ Restoration
+- 🎨 Recoloring
+- ✂️ Object removal
+- 🖌️ Background removal
+
+Built with **Next.js**, **MongoDB**, and **Cloudinary**, it delivers a smooth editing experience.  
+Stripe integration allows users to purchase credits for premium features.
+
+---
+
+## 🚀 About the Project
+
+This application is designed for creators, photographers, and casual users who want professional-grade AI image editing without complex tools.  
+Whether you want to restore old photos, remove unwanted objects, or recolor images, the editor makes it fast and intuitive.
+
+---
+
+## 🛠️ Tech Stack
+- **Frontend:** Next.js, React, TailwindCSS
+- **Backend:** 	Framework for SSR & routing, Node.js, MongoDB
+- **Cloud Storage & Processing:** Cloudinary
+- **Payments:** Stripe
+- **AI Processing:** Integrated with cloud-based AI APIs
+
+---
+
+## ✨ Features
+- **AI Restoration** – Repair and enhance old/damaged images.
+- **Smart Object Removal** – Remove unwanted objects seamlessly.
+- **Background Removal** – Instant, accurate background replacement.
+- **Colorization & Recoloring** – Bring B/W photos to life or recolor objects.
+- **Credit System** – Purchase editing credits for premium transformations.
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/fc7ffa75-2e95-49cb-aa68-5012ec99f496" alt="Screenshot 2" width="600" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2a0499f6-0faf-443c-ab34-768e5e7bfb85" alt="Screenshot 1" width="600" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e901f248-005a-40e8-beaa-c40318ed6a39" alt="Screenshot 3" width="500" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c59b6b29-8923-45e8-9201-170037b62f2c" alt="Screenshot 4" width="500" />
+</p>
+
+---
+
+## 🖥️ Getting Started
 
 First, run the development server:
 
 ```bash
+npm install
 npm run dev
 # or
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
+Open http://localhost:3000 in your browser.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+📚 Learn More
+Next.js Documentation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Cloudinary Documentation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Stripe Documentation
 
-## Learn More
+🌍 Deployment
+image-ai-editor.vercel.app
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# Image_AI_Editor
-The AI Image Editor SaaS platform enables advanced AI-driven image transformations like restoration, recoloring, object removal, and background removal. Built with Next.js, MongoDB, and Cloudinary, it offers a seamless editing experience and integrates Stripe for users to purchase credits for premium features.
->>>>>>> 0613c1ef4ba1d1df342cbc275c7b748750c8ad9e
