@@ -18,7 +18,6 @@ import { formUrlQuery } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Search } from "./Search";
 
-
 export const Collection = ({
   hasSearch = false,
   images,
@@ -109,13 +108,20 @@ const Card = ({ image }: { image: IImage }) => {
           sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
         />
         <div className="flex-between">
-          <p className="p-20-semibold mr-3 line-clamp-1 text-dark-600">
-            {image.title}
-          </p>
+          <div className="flex-grow mr-3">
+            <p className="p-20-semibold line-clamp-1 text-dark-600">
+              {image.title}
+            </p>
+            {image.subtitle && (
+              <p className="subtitle-text line-clamp-1 text-gray-500">
+                {image.subtitle}
+              </p>
+            )}
+          </div>
           <Image
             src={`/assets/icons/${
               transformationTypes[
-                image.transformationType as TransformationTypeKey
+                image.transformationType as keyof typeof transformationTypes
               ].icon
             }`}
             alt={image.title}

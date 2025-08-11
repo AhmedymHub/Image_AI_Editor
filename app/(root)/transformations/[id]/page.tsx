@@ -1,94 +1,43 @@
-import { auth } from '@clerk/nextjs/server';
-import Image from "next/image";
-import Header from "@/components/shared/Header";
-import TransformedImage from "@/components/shared/TransformedImage";
-import { getImageById } from "@/lib/actions/image.actions";
-import { getImageSize } from "@/lib/utils";
-import UpdateButton from "@/components/shared/UpdateButton"; // Import the new UpdateButton component
-import { DeleteConfirmation } from '@/components/shared/DeleteConfirmation';
+// app/(root)/transformations/[id]/page.tsx
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
-  const { userId } = await auth(); // Get the authenticated user ID
-  const image = await getImageById(id); // Fetch image details by ID
+import Header from "@/components/shared/Header";
+import TransformationForm from "@/components/shared/TransformationForm";
+import { transformationTypes, TransformationTypeKey } from "@/constants";
+import { getUserById } from "@/lib/actions/user.actions";
+import { getImageById } from "@/lib/actions/image.actions";
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params; // ✅ match Next's Promise type
+
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
+  const user = await getUserById(userId);
+  const image = await getImageById(id);
+
+  const transformationType = image.transformationType as TransformationTypeKey;
+  const transformation = transformationTypes[transformationType];
+  if (!transformation) redirect("/not-found");
 
   return (
     <>
-      <Header title={image.title} />
-
-      <section className="mt-5 flex flex-wrap gap-4">
-        <div className="p-14-medium md:p-16-medium flex gap-2">
-          <p className="text-dark-600">Transformation:</p>
-          <p className="capitalize text-purple-400">{image.transformationType}</p>
-        </div>
-
-        {image.prompt && (
-          <>
-            <p className="hidden text-dark-400/50 md:block">&#x25CF;</p>
-            <div className="p-14-medium md:p-16-medium flex gap-2">
-              <p className="text-dark-600">Prompt:</p>
-              <p className="capitalize text-purple-400">{image.prompt}</p>
-            </div>
-          </>
-        )}
-
-        {image.color && (
-          <>
-            <p className="hidden text-dark-400/50 md:block">&#x25CF;</p>
-            <div className="p-14-medium md:p-16-medium flex gap-2">
-              <p className="text-dark-600">Color:</p>
-              <p className="capitalize text-purple-400">{image.color}</p>
-            </div>
-          </>
-        )}
-
-        {image.aspectRatio && (
-          <>
-            <p className="hidden text-dark-400/50 md:block">&#x25CF;</p>
-            <div className="p-14-medium md:p-16-medium flex gap-2">
-              <p className="text-dark-600">Aspect Ratio:</p>
-              <p className="capitalize text-purple-400">{image.aspectRatio}</p>
-            </div>
-          </>
-        )}
-      </section>
-
-      <section className="mt-10 border-t border-dark-400/15">
-        <div className="transformation-grid">
-          {/* MEDIA UPLOADER */}
-          <div className="flex flex-col gap-4">
-            <h3 className="h3-bold text-dark-600">Original</h3>
-
-            <Image
-              width={getImageSize(image.transformationType, image, "width")}
-              height={getImageSize(image.transformationType, image, "height")}
-              src={image.secureURL}
-              alt="image"
-              className="transformation-original_image"
-            />
-          </div>
-
-          {/* TRANSFORMED IMAGE */}
-          <TransformedImage
-            image={image}
-            type={image.transformationType}
-            title={image.title}
-            isTransforming={false}
-            transformationConfig={image.config}
-            hasDownload={true}
-          />
-        </div>
-
-        {/* Only show Update Image button if user is the author */}
-        {userId === image.author.clerkId && (
-          <div className="mt-4 space-y-4">
-            <UpdateButton imageId={image._id} />
-            <DeleteConfirmation imageId={image._id}/>
-          </div>
-        )}
-
+      <Header title={transformation.title} subtitle={transformation.subtitle} />
+      <section className="mt-10">
+        <TransformationForm
+          action="Update"
+          userId={user._id}
+          type={transformationType}
+          creditBalance={user.creditBalance}
+          config={image.config}
+          data={image}
+        />
       </section>
     </>
   );
-};
-
-export default ImageDetails;
+}

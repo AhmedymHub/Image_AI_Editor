@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import User from "../database/models/user.models";
 import { connectToDatabase } from "../database/mongoose";
 import { handleError } from "../utils";
+import type { CreateUserParams, UpdateUserParams } from "@/types";
 
 // CREATE
 export async function createUser(user: CreateUserParams) {
@@ -44,7 +45,7 @@ export async function updateUser(clerkId: string, user: UpdateUserParams) {
     });
 
     if (!updatedUser) throw new Error("User update failed");
-    
+
     return JSON.parse(JSON.stringify(updatedUser));
   } catch (error) {
     handleError(error);
@@ -68,27 +69,25 @@ export async function deleteUser(clerkId: string) {
     revalidatePath("/");
 
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
-  } catch (error) { 
+  } catch (error) {
     handleError(error);
   }
 }
 
 // USE CREDITS
-export async function updateCredits(userId: string, creditFee: number){
+export async function updateCredits(userId: string, creditFee: number) {
   try {
     await connectToDatabase();
 
     const updateUserCredits = await User.findOneAndUpdate(
-      {_id: userId },
+      { _id: userId },
       { $inc: { creditBalance: creditFee } },
       { new: true }
-    )
-  
-  if(!updateUserCredits) throw new Error("User credits update failed");
-  return JSON.parse(JSON.stringify(updateUserCredits));
-  
+    );
+
+    if (!updateUserCredits) throw new Error("User credits update failed");
+    return JSON.parse(JSON.stringify(updateUserCredits));
   } catch (error) {
     handleError(error);
-    
   }
 }

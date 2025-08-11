@@ -88,6 +88,21 @@ declare type CreateTransactionParams = {
   createdAt: Date;
 };
 
+export interface IImage {
+  _id?: string;
+  title?: string;
+  publicId: string;
+  transformationType?: string;
+  width?: number;
+  height?: number;
+  config?: any;
+  secureURL?: string;
+  transformationURL?: string;
+  aspectRatio?: string;
+  prompt?: string;
+  color?: string;
+}
+
 declare type TransformationTypeKey =
   | "restore"
   | "fill"
@@ -114,6 +129,11 @@ declare type RemoveUrlQueryParams = {
 };
 
 declare type SearchParamProps = {
+  params: { id: string; type: TransformationTypeKey }; // Static params
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export type SearchParamProps = {
   params: { id: string; type: TransformationTypeKey };
   searchParams: { [key: string]: string | string[] | undefined };
 };
@@ -135,4 +155,45 @@ declare type TransformedImageProps = {
   isTransforming: boolean;
   hasDownload?: boolean;
   setIsTransforming?: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+type CheckoutTransactionParams = {
+  amount: number;
+  plan: string;
+  credits: number;
+  buyerId: string;
+};
+
+type CreateTransactionParams = {
+  plan: string;
+  credits: number;
+  buyerId: string;
+  [key: string]: any;
+};
+
+export type CreateUserParams = {
+  clerkId: string;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  photo: string;
+};
+
+export type UpdateUserParams = {
+  firstName: string;
+  lastName: string;
+  username: string;
+  photo: string;
+};
+
+export type FormUrlQueryParams = {
+  searchParams: URLSearchParams | string;
+  key: string;
+  value: string | number | null;
+};
+
+export type RemoveUrlQueryParams = {
+  searchParams: string; // raw query string, e.g. "foo=1&bar=2"
+  keysToRemove: string[];
 };

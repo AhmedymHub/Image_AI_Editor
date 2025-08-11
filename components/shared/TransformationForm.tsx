@@ -13,10 +13,13 @@ import {
 } from "@/components/ui/select";
 
 import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import {
-  Form
-} from "@/components/ui/form";
-import { aspectRatioOptions, creditFee, defaultValues, transformationTypes } from "@/constants";
+  aspectRatioOptions,
+  creditFee,
+  defaultValues,
+  transformationTypes,
+} from "@/constants";
 import { CustomField } from "./CustomField";
 import { useEffect, useState, useTransition } from "react";
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
@@ -28,6 +31,9 @@ import { addImage, updateImage } from "@/lib/actions/image.actions";
 import { useRouter } from "next/navigation";
 import { InsufficientCreditsModal } from "./InsuffiencientCreditsModal";
 
+import type { IImage, TransformationTypeKey, Transformations } from "@/types";
+
+// Your form schema stays the same
 export const formSchema = z.object({
   title: z.string(),
   aspectRatio: z.string().optional(),
@@ -36,11 +42,13 @@ export const formSchema = z.object({
   publicId: z.string(),
 });
 
-interface TransformationConfig {
-  [key: string]: {
-    prompt?: string;
-    to?: string;
-  };
+interface TransformationFormProps {
+  action: "Add" | "Update";
+  data?: IImage | null;
+  userId: string;
+  type: TransformationTypeKey;
+  creditBalance: number;
+  config?: Transformations | null;
 }
 
 const TransformationForm = ({
@@ -51,139 +59,182 @@ const TransformationForm = ({
   creditBalance,
   config = null,
 }: TransformationFormProps) => {
-  const transformationType = transformationTypes[type] as TransformationConfig;
-  const [image, setImage] = useState(data);
-  const [newTransformation, setNewTransformation] = useState<TransformationConfig | null>(null);
+  const transformationType = transformationTypes[type];
+
+  // Provide safe defaults for image state using IImage (nullable properties allowed)
+  const initialImage: IImage = data ?? {
+    _id: undefined,
+    title: "",
+    publicId: "",
+    width: 0,
+    height: 0,
+    secureURL: "",
+    aspectRatio: undefined,
+    prompt: undefined,
+    color: undefined,
+  };
+
+  const [image, setImage] = useState<IImage>(initialImage);
+  const [newTransformation, setNewTransformation] =
+    useState<Transformations | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
-  const [transformationConfig, setTransformationConfig] = useState(config);
+  const [transformationConfig, setTransformationConfig] =
+    useState<Transformations | null>(config);
   const [, startTransition] = useTransition();
   const router = useRouter();
 
   const initialValues =
     data && action === "Update"
       ? {
-          title: data?.title,
-          aspectRatio: data?.aspectRatio,
-          color: data?.color,
-          prompt: data?.prompt,
-          publicId: data?.publicId,
+          title: data.title || "",
+          aspectRatio: data.aspectRatio,
+          color: data.color,
+          prompt: data.prompt,
+          publicId: data.publicId,
         }
       : defaultValues;
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
   });
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
 
-    if (data || image) {
-      const transformationUrl = getCldImageUrl({
-        width: image?.width,
-        height: image?.height,
-        src: image?.publicId,
-        ...transformationConfig,
-      });
+    if (
+      !image.publicId ||
+      !image.width ||
+      !image.height ||
+      !image.secureURL ||
+      !image.title
+    ) {
+      console.error("Missing required image fields");
+      setIsSubmitting(false);
+      return;
+    }
 
-      const imageData = {
-        title: values.title,
-        publicId: image?.publicId,
-        transformationType: type,
-        width: image?.width,
-        height: image?.height,
-        config: transformationConfig,
-        secureURL: image?.secureURL,
-        transformationURL: transformationUrl,
-        aspectRatio: values.aspectRatio,
-        prompt: values.prompt,
-        color: values.color,
-      };
+    const transformationUrl = getCldImageUrl({
+      width: image.width,
+      height: image.height,
+      src: image.publicId,
+      ...transformationConfig,
+    });
 
+    const imageData = {
+      title: values.title,
+      publicId: image.publicId,
+      transformationType: type,
+      width: image.width,
+      height: image.height,
+      config: transformationConfig,
+      secureURL: image.secureURL,
+      transformationURL: transformationUrl,
+      aspectRatio: values.aspectRatio,
+      prompt: values.prompt,
+      color: values.color,
+    };
+
+    try {
       if (action === "Add") {
-        try {
-          const newImage = await addImage({
-            image: imageData,
-            userId,
-            path: "/",
-          });
+        const newImage = await addImage({
+          image: imageData,
+          userId,
+          path: "/",
+        });
 
-          if (newImage) {
-            form.reset();
-            setImage(data);
-            router.push(`/transformations/${newImage._id}`);
-          }
-        } catch (error) {
-          console.error(error);
+        if (newImage) {
+          form.reset();
+          setImage(initialImage);
+          router.push(`/transformations/${newImage._id}`);
+        }
+      } else if (action === "Update") {
+        if (!data?._id) {
+          console.error("No image _id found for update");
+          setIsSubmitting(false);
+          return;
+        }
+
+        const updatedImage = await updateImage({
+          image: {
+            ...imageData,
+            _id: data._id,
+          },
+          userId,
+          path: `/transformations/${data._id}`,
+        });
+
+        if (updatedImage) {
+          router.push(`/transformations/${updatedImage._id}`);
         }
       }
-      if (action === "Update") {
-        try {
-          const updatedImage = await updateImage({
-            image: {
-              ...imageData,
-              _id: data._id,
-            },
-            userId,
-            path: `/transformations/${data._id}`,
-          });
-
-          if (updatedImage) {
-            router.push(`/transformations/${updatedImage._id}`);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }
+    } catch (error) {
+      console.error(error);
     }
     setIsSubmitting(false);
   }
 
-  const onSelectFieldHandler = (value: string, onChangeField: (value: string) => void) => {
+  const onSelectFieldHandler = (
+    value: string,
+    onChangeField: (value: string) => void
+  ) => {
     const imageSize = aspectRatioOptions[value as AspectRatioKey];
 
-    setImage((prevState: ImageData | null) => ({
+    setImage((prevState) => ({
       ...prevState,
       aspectRatio: imageSize.aspectRatio,
       width: imageSize.width,
       height: imageSize.height,
     }));
 
-    setNewTransformation(transformationType as TransformationConfig);
+    setNewTransformation(transformationType.config);
 
-    return onChangeField(value);
+    onChangeField(value);
   };
 
   const onInputChangeHandler = (
     fieldName: string,
     value: string,
-    type: string,
-    onChangeField: (value: string) => void) => {
+    typeKey: TransformationTypeKey,
+    onChangeField: (value: string) => void
+  ) => {
     debounce(() => {
-      setNewTransformation((prevState: TransformationConfig | null) => {
-        if (!prevState) return {}; // Handle null state
-      
+      setNewTransformation((prevState: Transformations | null) => {
+        if (!prevState) return {};
+
+        const mapKey = typeKey === "fill" ? "fillBackground" : typeKey;
+
+        const currentValue = prevState[mapKey];
+
+        if (typeof currentValue === "boolean" || !currentValue) {
+          return {
+            ...prevState,
+            [typeKey]: {
+              [fieldName === "prompt" ? "prompt" : "to"]: value,
+            },
+          };
+        }
+
         return {
           ...prevState,
-          [type]: {
-            ...prevState[type], // Use the type as the key
-            [fieldName === "prompt" ? "prompt" : "to"]: value, // Set the appropriate field
+          [typeKey]: {
+            ...currentValue,
+            [fieldName === "prompt" ? "prompt" : "to"]: value,
           },
         };
       });
-
     }, 1000)();
 
-    return onChangeField(value);
+    onChangeField(value);
   };
 
   const onTransformHandler = async () => {
     setIsTransforming(true);
 
-    setTransformationConfig(deepMergeObjects(newTransformation, transformationConfig));
+    setTransformationConfig(
+      deepMergeObjects(newTransformation, transformationConfig)
+    );
 
     setNewTransformation(null);
 
@@ -193,10 +244,10 @@ const TransformationForm = ({
   };
 
   useEffect(() => {
-      if (image && (type === "restore" || type === "removeBackground")) {
-        setNewTransformation(transformationType as TransformationConfig);
-      }
-    }, [image, transformationType, type]);
+    if (image && (type === "restore" || type === "removeBackground")) {
+      setNewTransformation(transformationType.config);
+    }
+  }, [image, transformationType, type]);
 
   return (
     <Form {...form}>
@@ -217,7 +268,12 @@ const TransformationForm = ({
             formLabel="Aspect Ratio"
             className="w-full"
             render={({ field }) => (
-              <Select onValueChange={(value) => onSelectFieldHandler(value, field.onChange)} value={field.value}>
+              <Select
+                onValueChange={(value) =>
+                  onSelectFieldHandler(value, field.onChange)
+                }
+                value={field.value}
+              >
                 <SelectTrigger className="select-field">
                   <SelectValue placeholder="Select size" />
                 </SelectTrigger>
@@ -238,14 +294,21 @@ const TransformationForm = ({
             <CustomField
               control={form.control}
               name="prompt"
-              formLabel={type === "remove" ? "Object to remove" : "Object to recolor"}
+              formLabel={
+                type === "remove" ? "Object to remove" : "Object to recolor"
+              }
               className="w-full"
               render={({ field }) => (
                 <input
                   value={field.value}
                   className="input-field"
                   onChange={(e) =>
-                    onInputChangeHandler("prompt", e.target.value, type, field.onChange)
+                    onInputChangeHandler(
+                      "prompt",
+                      e.target.value,
+                      type,
+                      field.onChange
+                    )
                   }
                 />
               )}
@@ -262,7 +325,12 @@ const TransformationForm = ({
                     value={field.value}
                     className="input-field"
                     onChange={(e) =>
-                      onInputChangeHandler("color", e.target.value, "recolor", field.onChange)
+                      onInputChangeHandler(
+                        "color",
+                        e.target.value,
+                        "recolor",
+                        field.onChange
+                      )
                     }
                   />
                 )}
@@ -306,7 +374,11 @@ const TransformationForm = ({
           >
             {isTransforming ? "Transforming..." : "Apply Transformation"}
           </Button>
-          <Button type="submit" className="submit-button capitalize" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            className="submit-button capitalize"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Submitting..." : "Save Image"}
           </Button>
         </div>

@@ -1,37 +1,40 @@
-import Header from '@/components/shared/Header'
-import TransformationForm from '@/components/shared/TransformationForm';
-import { transformationTypes } from '@/constants'
-import { getUserById } from '@/lib/actions/user.actions';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
+import Header from "@/components/shared/Header";
+import TransformationForm from "@/components/shared/TransformationForm";
+import { transformationTypes } from "@/constants";
+import { getUserById } from "@/lib/actions/user.actions";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
+export type TransformationTypeKey = keyof typeof transformationTypes;
 
-const AddTransformationTypePage =  async ({ params:{ type } }: SearchParamProps) => {
-    const { userId } = await auth();
-    const transformation = transformationTypes[type];
-    
-     if(!userId) redirect('/sign-in');
+type Props = {
+  params: Promise<{ type: string }>;
+};
 
-    const user = await getUserById(userId);
+const AddTransformationTypePage = async ({ params }: Props) => {
+  const { type } = await params; // ✅ await because it's a Promise
+
+  const transformation = transformationTypes[type as TransformationTypeKey];
+  if (!transformation) redirect("/not-found");
+
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
+  const user = await getUserById(userId);
 
   return (
     <>
-      <Header 
-      title={transformation.title}
-      subtitle={transformation.subTitle}
-      />
-
+      <Header title={transformation.title} subtitle={transformation.subtitle} />
       <section className="mt-10">
         <TransformationForm
           action="Add"
           userId={user._id}
-          type={transformation.type as TransformationTypeKey}
-          creditBalance={user.creditBalance} 
+          type={type as TransformationTypeKey}
+          creditBalance={user.creditBalance}
         />
       </section>
-    
     </>
-  )
-}
+  );
+};
 
-export default AddTransformationTypePage
+export default AddTransformationTypePage;

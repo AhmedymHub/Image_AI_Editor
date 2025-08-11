@@ -7,12 +7,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface HomeProps {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ page?: string; query?: string }>;
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
-  const page = Number(searchParams?.page) || 1;
-  const searchQuery = (searchParams?.query as string) || "";
+  const params = await searchParams;
+  const page = Number(params?.page) || 1;
+  const searchQuery = params?.query || "";
 
   const images = await getAllImages({ page, searchQuery });
 
@@ -32,9 +33,7 @@ const Home = async ({ searchParams }: HomeProps) => {
               <li className="flex-center w-fit rounded-full bg-white p-4">
                 <Image src={link.icon} alt="icon" width={24} height={24} />
               </li>
-              <p className="p-14-medium text-center text-white">
-                {link.label}
-              </p>
+              <p className="p-14-medium text-center text-white">{link.label}</p>
             </Link>
           ))}
         </ul>
