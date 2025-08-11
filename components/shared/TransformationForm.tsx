@@ -30,6 +30,7 @@ import { getCldImageUrl } from "next-cloudinary";
 import { addImage, updateImage } from "@/lib/actions/image.actions";
 import { useRouter } from "next/navigation";
 import { InsufficientCreditsModal } from "./InsuffiencientCreditsModal";
+import UpdateButton from "@/components/shared/UpdateButton";
 
 import type { IImage, TransformationTypeKey, Transformations } from "@/types";
 
@@ -103,33 +104,36 @@ const TransformationForm = ({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
 
-    if (
-      !image.publicId ||
-      !image.width ||
-      !image.height ||
-      !image.secureURL ||
-      !image.title
-    ) {
+    // Ensure width and height are never null or undefined
+    const fixedImage = {
+      ...image,
+      width: image?.width ?? 0,
+      height: image?.height ?? 0,
+      publicId: image?.publicId ?? "",
+      secureURL: image?.secureURL ?? "",
+    };
+
+    if (!fixedImage.publicId || !fixedImage.secureURL || !values.title) {
       console.error("Missing required image fields");
       setIsSubmitting(false);
       return;
     }
 
     const transformationUrl = getCldImageUrl({
-      width: image.width,
-      height: image.height,
-      src: image.publicId,
+      width: fixedImage.width,
+      height: fixedImage.height,
+      src: fixedImage.publicId,
       ...transformationConfig,
     });
 
     const imageData = {
       title: values.title,
-      publicId: image.publicId,
+      publicId: fixedImage.publicId,
       transformationType: type,
-      width: image.width,
-      height: image.height,
+      width: fixedImage.width,
+      height: fixedImage.height,
       config: transformationConfig,
-      secureURL: image.secureURL,
+      secureURL: fixedImage.secureURL,
       transformationURL: transformationUrl,
       aspectRatio: values.aspectRatio,
       prompt: values.prompt,
@@ -146,7 +150,8 @@ const TransformationForm = ({
 
         if (newImage) {
           form.reset();
-          setImage(initialImage);
+          // REMOVE setImage(initialImage);
+          // Wait for navigation, let the next page handle loading fresh data
           router.push(`/transformations/${newImage._id}`);
         }
       } else if (action === "Update") {
@@ -172,6 +177,7 @@ const TransformationForm = ({
     } catch (error) {
       console.error(error);
     }
+
     setIsSubmitting(false);
   }
 
@@ -366,14 +372,19 @@ const TransformationForm = ({
         </div>
 
         <div className="flex flex-col gap-4">
-          <Button
-            type="button"
-            className="submit-button capitalize"
-            disabled={isTransforming || newTransformation === null}
-            onClick={onTransformHandler}
-          >
-            {isTransforming ? "Transforming..." : "Apply Transformation"}
-          </Button>
+          {/* Show "Apply Transformation" only if adding a new image */}
+          {action === "Add" && (
+            <Button
+              type="button"
+              className="submit-button capitalize"
+              disabled={isTransforming || newTransformation === null}
+              onClick={onTransformHandler}
+            >
+              {isTransforming ? "Transforming..." : "Apply Transformation"}
+            </Button>
+          )}
+
+          {/* Always show "Save Image" */}
           <Button
             type="submit"
             className="submit-button capitalize"
@@ -381,6 +392,11 @@ const TransformationForm = ({
           >
             {isSubmitting ? "Submitting..." : "Save Image"}
           </Button>
+
+          {/* Show UpdateButton only if updating and image has an ID */}
+          {action === "Update" && image._id && (
+            <UpdateButton imageId={image._id} />
+          )}
         </div>
       </form>
     </Form>
