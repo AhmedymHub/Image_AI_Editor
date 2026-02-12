@@ -1,4 +1,4 @@
-import tailwindcssAnimate from 'tailwindcss-animate';
+import tailwindcssAnimate from "tailwindcss-animate";
 
 const tailwindConfig = {
   darkMode: ["class"],
